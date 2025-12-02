@@ -1,6 +1,7 @@
 from preprocess import prepare_dataset
 from model import LSTM
 from train import train_model
+from eval import evaluate
 import torch
 
 
@@ -22,6 +23,10 @@ torch.save(model.state_dict(), "lstm_model.pth")
 
 
 #evaluate the model
+f1 = evaluate(model, X_pad, Y_pad, tag2id)
+print(f"F1 Score on training data: {f1:.4f}")
+
+
 
 
 

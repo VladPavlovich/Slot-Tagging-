@@ -98,13 +98,34 @@ def prepare_dataset(path):
 
     return X_pad, Y_pad, lengths, word2id, tag2id
 
-#for testing purposes so that we can use existing vocabularies
-def prepare_dataset_with_vocab(path, word2id, tag2id):
-    sentences, labels = load_data(path)
-    X, Y = encode(sentences, labels, word2id, tag2id)
+def prepare_test_dataset(path, word2id):
+    sentences = []
+    ids = []
+    
+    with open(path, "r") as f:
+        reader = csv.reader(f)
+        for row in reader:
+            # skip header or empty rows
+            if not row or row[0] == "ID":
+                continue
+            
+            # row format: [ID, Utterance]
+            idx = row[0]
+            words = row[1].split() # Tokenize by space
+            
+            sentences.append(words)
+            ids.append(idx)
+
+    # encode using the existing word2id from training
+    X = []
+    for sent in sentences:
+        w_ids = [word2id.get(w, word2id["<UNK>"]) for w in sent]
+        X.append(w_ids)
+
+
     X_pad, lengths = pad_sequences(X, pad_value=word2id["<PAD>"])
-    Y_pad, _ = pad_sequences(Y, pad_value=tag2id["<PAD>"])
-    return X_pad, Y_pad, lengths
+
+    return X_pad, lengths, ids
 
 
 
@@ -115,6 +136,9 @@ if __name__ == "__main__":
     print("Padded Input shape:", X_pad.shape)
     print("Padded Labels shape:", Y_pad.shape)
     print("Lengths shape:", lengths.shape)
+
+
+    print("the tags are:", len(tag2id))
 
 
 

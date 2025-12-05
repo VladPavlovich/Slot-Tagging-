@@ -5,50 +5,23 @@ from generate_test_csv import generate_submission
 from model import LSTM
 from train import train_model
 from gru import GRU
-from rnn import RNN
-from LSTM_CNN import LSTM_CNN
-
-
-#split the code into train and val 80 20
-from sklearn.model_selection import train_test_split
 
 # preprocess the training data
 X_pad, Y_pad, lengths, word2id, tag2id = prepare_dataset("train.csv")
 
-print(X_pad.shape, Y_pad.shape)
 
 print("Padded Input Sequences:\n", X_pad)
 print("Padded Target Sequences:\n", Y_pad)
 print("Sequence Lengths:\n", lengths)
 
 
-#train and val split
-X_train, X_val, Y_train, Y_val, lengths_train, lengths_val = train_test_split(
-    X_pad, Y_pad, lengths, test_size=0.1, random_state=42
-)
-print("Training set size:", X_train.size(0))
-print("Validation set size:", X_val.size(0))
-
-
-
-
 #model = LSTM(vocab_size=len(word2id), tagset_size=len(tag2id))
 model = GRU(vocab_size=len(word2id), tagset_size=len(tag2id))
-#model = RNN(vocab_size=len(word2id), tagset_size=len(tag2id))
-#model = LSTM_CNN(vocab_size=len(word2id), tagset_size=len(tag2id))
 print(model)
 
 #train the model
-train_model(
-    model, 
-    X_train, 
-    Y_train, 
-    X_val,      
-    Y_val,      
-    epochs=15, 
-    batch_size=32, 
-    learning_rate=0.001
-)
+train_model(model, X_pad, Y_pad, lengths, epochs=15, batch_size=32, learning_rate=0.001)
+
 # saved model state but already kept in memory for generating predictions
 #torch.save(model.state_dict(), "lstm_model.pt")
 
